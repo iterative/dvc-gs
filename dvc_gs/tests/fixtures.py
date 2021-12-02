@@ -14,7 +14,10 @@ def docker_compose_file(pytestconfig):
 
 @pytest.fixture
 def make_gs():
-    yield GCP(GCP.get_url())
+    def _make_gs():
+        return GCP(GCP.get_url())
+
+    return _make_gs
 
 
 @pytest.fixture
