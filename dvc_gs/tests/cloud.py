@@ -3,7 +3,6 @@ import uuid
 
 from dvc.testing.cloud import Cloud
 from dvc.testing.path_info import CloudURLInfo
-from dvc.utils import env2bool
 
 TEST_GCP_REPO_BUCKET = os.environ.get("DVC_TEST_GCP_REPO_BUCKET", "dvc-test")
 
@@ -20,17 +19,6 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = TEST_GCP_CREDS_FILE
 class GCP(Cloud, CloudURLInfo):
 
     IS_OBJECT_STORAGE = True
-
-    @staticmethod
-    def should_test():
-        do_test = env2bool("DVC_TEST_GCP", undefined=None)
-        if do_test is not None:
-            return do_test
-
-        if not os.path.exists(TEST_GCP_CREDS_FILE):
-            return False
-
-        return True
 
     @property
     def config(self):

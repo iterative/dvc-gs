@@ -14,8 +14,6 @@ def docker_compose_file(pytestconfig):
 
 @pytest.fixture
 def make_gs():
-    if not GCP.should_test():
-        pytest.skip("no gs")
     yield GCP(GCP.get_url())
 
 
