@@ -1,3 +1,4 @@
+import os
 import uuid
 
 from dvc.testing.cloud import Cloud
@@ -12,7 +13,11 @@ class GCP(Cloud, CloudURLInfo):
 
     @property
     def config(self):
-        return {"url": self.url, "projectname": "dvc-test"}
+        # FIXME: we shouldn't need to set credentialpath if env var is set
+        return {
+            "url": self.url,
+            "credentialpath": os.getenv("GOOGLE_APPLICATION_CREDENTIALS"),
+        }
 
     @staticmethod
     def _get_storagepath():
