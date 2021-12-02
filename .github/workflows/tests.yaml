@@ -82,7 +82,7 @@ jobs:
       env:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/gs-creds.json
       run: |
-        echo "${{ secrets.GS_CREDS }}" > $GOOGLE_APPLICATION_CREDENTIALS
+        printf "%s" "${{ secrets.GS_CREDS }}" > $GOOGLE_APPLICATION_CREDENTIALS
         pytest -n=auto --cov-report=xml --cov-report=term
     - name: upload coverage report
       uses: codecov/codecov-action@v2.1.0
