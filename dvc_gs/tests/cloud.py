@@ -1,4 +1,3 @@
-import os
 import uuid
 
 from dvc.testing.cloud import Cloud
@@ -11,12 +10,21 @@ class GCP(Cloud, CloudURLInfo):
 
     IS_OBJECT_STORAGE = True
 
+    def __init__(self, url, credentialpath):
+        super().__init__(url)
+        self.credentialpath = credentialpath
+
+    def __truediv__(self, key):
+        ret = super().__truediv__(key)
+        ret.credentialpath = self.credentialpath
+        return ret
+
     @property
     def config(self):
         # FIXME: we shouldn't need to set credentialpath if env var is set
         return {
             "url": self.url,
-            "credentialpath": os.getenv("GOOGLE_APPLICATION_CREDENTIALS"),
+            "credentialpath": self.credentialpath,
         }
 
     @staticmethod
@@ -31,7 +39,7 @@ class GCP(Cloud, CloudURLInfo):
     def _gc(self):
         from google.cloud.storage import Client
 
-        return Client()
+        return Client.from_service_account_json(self.credentialpath)
 
     @property
     def _bucket(self):
