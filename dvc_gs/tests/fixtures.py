@@ -2,6 +2,8 @@ import os
 
 import pytest
 
+from .cloud import GCP
+
 
 @pytest.fixture(scope="session")
 def docker_compose_file(pytestconfig):
@@ -12,13 +14,11 @@ def docker_compose_file(pytestconfig):
 
 @pytest.fixture
 def make_gs():
-    def _make_gs():
-        raise NotImplementedError
-
-    return _make_gs
+    if not GCP.should_test():
+        pytest.skip("no gs")
+    yield GCP(GCP.get_url())
 
 
 @pytest.fixture
 def gs(make_gs):
     return make_gs()
-

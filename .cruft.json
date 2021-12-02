@@ -1,0 +1,18 @@
+{
+  "template": "https://github.com/iterative/cookiecutter-dvc-plugin",
+  "commit": "fae545930bd1fe133b5cac3f911ec88114e49709",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "plugin_name": "gs",
+      "_copy_without_render": [
+        ".github/workflows/tests.yaml"
+      ],
+      "_template": "https://github.com/iterative/cookiecutter-dvc-plugin"
+    }
+  },
+  "directory": null,
+  "skip": [
+    ".git"
+  ]
+}
