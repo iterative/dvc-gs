@@ -12,7 +12,7 @@ class GCP(Cloud, CloudURLInfo):
 
     @property
     def config(self):
-        return {"url": self.url}
+        return {"url": self.url, "projectname": "dvc-test"}
 
     @staticmethod
     def _get_storagepath():
