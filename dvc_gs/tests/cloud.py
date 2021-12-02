@@ -1,19 +1,9 @@
-import os
 import uuid
 
 from dvc.testing.cloud import Cloud
 from dvc.testing.path_info import CloudURLInfo
 
-TEST_GCP_REPO_BUCKET = os.environ.get("DVC_TEST_GCP_REPO_BUCKET", "dvc-test")
-
-TEST_GCP_CREDS_FILE = os.path.abspath(
-    os.environ.get(
-        "GOOGLE_APPLICATION_CREDENTIALS",
-        os.path.join("scripts", "ci", "gcp-creds.json"),
-    )
-)
-# Ensure that absolute path is used
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = TEST_GCP_CREDS_FILE
+GS_BUCKET = "dvc-temp"
 
 
 class GCP(Cloud, CloudURLInfo):
@@ -22,11 +12,11 @@ class GCP(Cloud, CloudURLInfo):
 
     @property
     def config(self):
-        return {"url": self.url, "credentialpath": TEST_GCP_CREDS_FILE}
+        return {"url": self.url}
 
     @staticmethod
     def _get_storagepath():
-        return TEST_GCP_REPO_BUCKET + "/" + str(uuid.uuid4())
+        return GS_BUCKET + "/" + str(uuid.uuid4())
 
     @staticmethod
     def get_url():
@@ -36,7 +26,7 @@ class GCP(Cloud, CloudURLInfo):
     def _gc(self):
         from google.cloud.storage import Client
 
-        return Client.from_service_account_json(TEST_GCP_CREDS_FILE)
+        return Client()
 
     @property
     def _bucket(self):
