@@ -7,9 +7,7 @@ from .cloud import GCP
 
 @pytest.fixture(scope="session")
 def docker_compose_file(pytestconfig):
-    return os.path.join(
-        str(pytestconfig.rootdir), "dvc_gs", "tests", "docker-compose.yml"
-    )
+    return os.path.join(os.path.dirname(__file__), "docker-compose.yml")
 
 
 @pytest.fixture(scope="session")
