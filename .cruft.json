@@ -1,13 +1,14 @@
 {
   "template": "https://github.com/iterative/cookiecutter-dvc-plugin",
-  "commit": "49a49f630bc02f526802a530117ca9b70bc5ae6d",
+  "commit": "798757edbe3ba9dc9127ed9ff8b325f6fa9192c0",
   "checkout": null,
   "context": {
     "cookiecutter": {
       "plugin_name": "gs",
       "_copy_without_render": [
         ".github/workflows/tests.yaml",
-        ".github/workflows/update-template.yaml"
+        ".github/workflows/update-template.yaml",
+        ".github/workflows/release.yaml"
       ],
       "_template": "https://github.com/iterative/cookiecutter-dvc-plugin"
     }
