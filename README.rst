@@ -1,2 +1,3 @@
-# dvc-gs
+dvc-gs
+
 gs plugin for dvc
