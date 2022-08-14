@@ -75,6 +75,7 @@ jobs:
         pip install --upgrade pip setuptools wheel
         pip install -e ".[tests]"
         pip install git+https://github.com/iterative/dvc
+        pip install gcsfs==2022.1.0
     - name: setup git
       run: |
         git config --global user.email "dvctester@example.com"
