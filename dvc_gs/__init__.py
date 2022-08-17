@@ -1,9 +1,8 @@
 import threading
 
-from funcy import cached_property, wrap_prop
-
 # pylint:disable=abstract-method
 from dvc_objects.fs.base import ObjectFileSystem
+from funcy import cached_property, wrap_prop
 
 
 class GSFileSystem(ObjectFileSystem):
