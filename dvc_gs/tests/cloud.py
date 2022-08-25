@@ -72,3 +72,31 @@ class GCP(Cloud, CloudURLInfo):
 
     def read_bytes(self):
         return self._blob.download_as_string()
+
+
+class FakeGCP(GCP):
+    """Fake GCP client that is supposed to be using a mock server's endpoint"""
+
+    def __init__(self, url, endpoint_url: str):
+        super().__init__(
+            url, ""  # no need to provide credentials for a mock server
+        )
+        self.endpoint_url = endpoint_url
+
+    def __truediv__(self, key):
+        ret = super().__truediv__(key)
+        ret.endpoint_url = self.endpoint_url
+        return ret
+
+    @property
+    def config(self):
+        return {"url": self.url, "endpointurl": self.endpoint_url}
+
+    def get_url(self):
+        return self.url
+
+    @property
+    def _gc(self):
+        from google.cloud.storage import Client
+
+        return Client(client_options={"api_endpoint": self.endpoint_url})

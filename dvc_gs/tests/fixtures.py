@@ -2,12 +2,7 @@ import os
 
 import pytest
 
-from .cloud import GCP
-
-
-@pytest.fixture(scope="session")
-def docker_compose_file(pytestconfig):
-    return os.path.join(os.path.dirname(__file__), "docker-compose.yml")
+from .cloud import GCP, FakeGCP
 
 
 @pytest.fixture(scope="session")
@@ -24,9 +19,12 @@ def gs_creds(tmp_path_factory):
 
 
 @pytest.fixture
-def make_gs(gs_creds):
+def make_gs(tmp_gcs_path, fake_gcs_server):
     def _make_gs():
-        return GCP(GCP.get_url(), gs_creds)
+        return FakeGCP(
+            str(tmp_gcs_path).replace("gcs://", "gs://"),
+            endpoint_url=fake_gcs_server,
+        )
 
     return _make_gs
 
@@ -34,3 +32,8 @@ def make_gs(gs_creds):
 @pytest.fixture
 def gs(make_gs):
     return make_gs()
+
+
+@pytest.fixture
+def real_gs():
+    yield GCP(GCP.get_url(), "")
