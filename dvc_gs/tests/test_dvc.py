@@ -19,7 +19,8 @@ def workspace(make_workspace):
 class TestImport(_TestImport):
     @pytest.fixture
     def stage_md5(self):
-        return "2aa17f8daa26996b3f7a4cf8888ac9ac"
+        # stage md5 depends on the dir_md5, see below
+        return None
 
     @pytest.fixture
     def is_object_storage(self):
@@ -27,4 +28,7 @@ class TestImport(_TestImport):
 
     @pytest.fixture
     def dir_md5(self):
-        return "ec602a6ba97b2dd07bd6d2cd89674a60.dir"
+        # dir md5 for imported dirs changes on every run.
+        # we temporarily set it to None until the test is revisited
+        # https://github.com/iterative/dvc-gs/issues/7#issuecomment-1218497067
+        return None
