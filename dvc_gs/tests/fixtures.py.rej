@@ -1,0 +1,6 @@
+diff a/dvc_gs/tests/fixtures.py b/dvc_gs/tests/fixtures.py	(rejected hunks)
+@@ -19,4 +19,3 @@ def make_gs():
+ @pytest.fixture
+ def gs(make_gs):
+     return make_gs()
+-
