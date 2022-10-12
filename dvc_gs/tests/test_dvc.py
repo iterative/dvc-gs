@@ -5,8 +5,13 @@ from dvc.testing.api_tests import (  # noqa, pylint: disable=unused-import
 from dvc.testing.remote_tests import (  # noqa, pylint: disable=unused-import
     TestRemote,
 )
+from dvc.testing.workspace_tests import (  # noqa, pylint: disable=unused-import
+    TestGetUrl,
+)
 from dvc.testing.workspace_tests import TestImport as _TestImport
-from dvc.testing.workspace_tests import TestLsUrl as _TestLsUrl
+from dvc.testing.workspace_tests import (  # noqa, pylint: disable=unused-import
+    TestLsUrl,
+)
 
 
 @pytest.fixture
@@ -40,7 +45,3 @@ class TestImport(_TestImport):
         # we temporarily set it to None until the test is revisited
         # https://github.com/iterative/dvc-gs/issues/7#issuecomment-1218497067
         return None
-
-
-class TestLsUrl(_TestLsUrl):
-    pass
