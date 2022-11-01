@@ -21,9 +21,7 @@ class GSFileSystem(ObjectFileSystem):
     @wrap_prop(threading.Lock())
     @cached_property
     def fs(self):
-        # TODO: Use `gcsfs` when https://github.com/fsspec/gcsfs/pull/488
-        #       is merged and its version bumped
-        from .gcsfs import GCSFileSystem
+        from gcsfs import GCSFileSystem
 
         return GCSFileSystem(**self.fs_args)
 
