@@ -4,11 +4,20 @@ import threading
 from dvc_objects.fs.base import ObjectFileSystem
 from funcy import cached_property, wrap_prop
 
+from .path import GSPath
+
 
 class GSFileSystem(ObjectFileSystem):
     protocol = "gs"
     REQUIRES = {"gcsfs": "gcsfs"}
     PARAM_CHECKSUM = "etag"
+
+    @cached_property
+    def path(self) -> GSPath:
+        def _getcwd():
+            return self.fs.root_marker
+
+        return GSPath(self.sep, getcwd=_getcwd)
 
     def _prepare_credentials(self, **config):
         login_info = {"consistency": None}
@@ -33,3 +42,15 @@ class GSFileSystem(ObjectFileSystem):
 
     def unstrip_protocol(self, path: str) -> str:
         return "gs://" + path.lstrip("/")
+
+    @staticmethod
+    def _get_kwargs_from_urls(urlpath: str):
+        from gcsfs import GCSFileSystem
+
+        parts = GCSFileSystem._split_path(  # pylint: disable=protected-access
+            urlpath, version_aware=True
+        )
+        _, _, generation = parts
+        if generation is not None:
+            return {"version_aware": True}
+        return {}
