@@ -99,4 +99,7 @@ class FakeGCP(GCP):
     def _gc(self):
         from google.cloud.storage import Client
 
-        return Client(client_options={"api_endpoint": self.endpoint_url})
+        return Client(
+            use_auth_w_custom_endpoint=False,
+            client_options={"api_endpoint": self.endpoint_url},
+        )
