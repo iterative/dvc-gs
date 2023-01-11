@@ -30,7 +30,7 @@ def make_gs(tmp_gcs_path, fake_gcs_server):
 
 
 @pytest.fixture
-def gs(make_gs):
+def gs(make_gs):  # pylint: disable=redefined-outer-name
     return make_gs()
 
 
