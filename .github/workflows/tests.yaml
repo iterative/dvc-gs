@@ -1,42 +1,21 @@
 name: Tests
 
 on:
-  pull_request: {}
-  push: {}
+  push:
+    branches: [main]
+  pull_request:
   schedule:
     - cron: '5 1 * * *'  # every day at 01:05
-
   workflow_dispatch:
 
-env:
-  DVC_TEST: "true"
-  HOMEBREW_NO_AUTO_UPDATE: 1
-  SHELL: /bin/bash
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
-  lint:
-    timeout-minutes: 10
-    runs-on: ubuntu-latest
-    steps:
-    - name: Cancel Previous Runs
-      uses: styfle/cancel-workflow-action@0.9.1
-      with:
-        access_token: ${{ github.token }}
-    - uses: actions/checkout@v2.4.0
-      with:
-        fetch-depth: 0
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2.2.2
-      with:
-        python-version: 3.8
-    - name: Install requirements
-      run: |
-        pip install wheel
-        pip install -e '.[tests]'
-        pip install git+https://github.com/iterative/dvc pre-commit
-    - name: Check README
-      run: python setup.py checkdocs
-    - uses: pre-commit/action@v2.0.3
   tests:
     timeout-minutes: 45
     runs-on: ${{ matrix.os }}

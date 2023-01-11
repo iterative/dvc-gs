@@ -1,0 +1,66 @@
+diff a/.github/workflows/tests.yaml b/.github/workflows/tests.yaml	(rejected hunks)
+@@ -44,46 +23,36 @@ jobs:
+       fail-fast: false
+       matrix:
+         os: [ubuntu-20.04, windows-latest, macos-latest]
+-        pyv: ["3.8", "3.9", "3.10"]
+-        exclude:
+-          # no wheels for pygit2 yet
+-          - os: windows-latest
+-            pyv: "3.10"
++        pyv: ["3.8", "3.9", "3.10", "3.11"]
++
+     steps:
+-    - uses: actions/checkout@v2.4.0
++    - uses: actions/checkout@v3
+       with:
+         fetch-depth: 0
++  
+     - name: Set up Python
+-      uses: actions/setup-python@v2.2.2
++      uses: actions/setup-python@v4
+       with:
+         python-version: ${{ matrix.pyv }}
+-    - name: get pip cache dir
+-      id: pip-cache-dir
+-      run: |
+-        echo "::set-output name=dir::$(pip cache dir)"
+-    - name: set pip cache
+-      id: pip-cache
+-      uses: actions/cache@v2.1.6
+-      with:
+-        path: ${{ steps.pip-cache-dir.outputs.dir }}
+-        key: ${{ runner.os }}-pip-${{ hashFiles('setup.cfg') }}
+-        restore-keys: |
+-          ${{ runner.os }}-pip-
++        cache: 'pip'
++        cache-dependency-path: setup.cfg
++
+     - name: install
+-      if: steps.cache.pip-cache-dir.cache-hit != 'true'
+       run: |
+-        pip install --upgrade pip setuptools wheel
++        pip install --upgrade pip wheel
+         pip install -e ".[tests]"
+-        pip install "dvc[testing]@git+https://github.com/iterative/dvc"
+-    - name: setup git
+-      run: |
+-        git config --global user.email "dvctester@example.com"
+-        git config --global user.name "DVC Tester"
++        pip install "dvc[testing] @ git+https://github.com/iterative/dvc"
++
++    - name: lint
++      timeout-minutes: 10
++      uses: pre-commit/action@v3.0.0
++
+     - name: run tests
+-      timeout-minutes: 40
++      timeout-minutes: 15
+       run: pytest -v -n=auto --cov-report=xml --cov-report=term
++
+     - name: upload coverage report
+-      uses: codecov/codecov-action@v2.1.0
++      uses: codecov/codecov-action@v3
+       with:
+         file: ./coverage.xml
+         fail_ci_if_error: false
