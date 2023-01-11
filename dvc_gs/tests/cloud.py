@@ -62,6 +62,7 @@ class GCP(Cloud, CloudURLInfo):
     def exists(self):
         return self.is_file() or self.is_dir()
 
+    # pylint: disable-next=unused-argument
     def mkdir(self, mode=0o777, parents=False, exist_ok=False):
         assert mode == 0o777
         assert parents
@@ -92,7 +93,7 @@ class FakeGCP(GCP):
     def config(self):
         return {"url": self.url, "endpointurl": self.endpoint_url}
 
-    def get_url(self):
+    def get_url(self):  # pylint: disable=arguments-differ
         return self.url
 
     @property
