@@ -21,6 +21,7 @@ class GSFileSystem(ObjectFileSystem):
 
     def _prepare_credentials(self, **config):
         login_info = {"consistency": None}
+        login_info["version_aware"] = config.get("version_aware", False)
         login_info["project"] = config.get("projectname")
         login_info["token"] = config.get("credentialpath")
         login_info["endpoint_url"] = config.get("endpointurl")
