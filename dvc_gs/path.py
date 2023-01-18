@@ -18,7 +18,7 @@ class GSPath(Path):
         path, path_version = self.split_version(path)
         if path_version:
             raise ValueError("path already includes an object generation")
-        return f"{path}#{version_id}"
+        return f"{path}#{version_id}" if version_id else path
 
     def version_path(self, path: AnyFSPath, version_id: Optional[str]) -> str:
         path, _ = self.split_version(path)
