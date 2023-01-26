@@ -30,6 +30,19 @@ def make_gs(tmp_gcs_path, fake_gcs_server):
 
 
 @pytest.fixture
+def make_gs_version_aware(  # pylint: disable=unused-argument
+    versioning, tmp_gcs_path, fake_gcs_server
+):
+    def _make_gs():
+        return FakeGCP(
+            str(tmp_gcs_path).replace("gcs://", "gs://"),
+            endpoint_url=fake_gcs_server,
+        )
+
+    return _make_gs
+
+
+@pytest.fixture
 def gs(make_gs):  # pylint: disable=redefined-outer-name
     return make_gs()
 
