@@ -1,4 +1,5 @@
 from typing import Optional, Tuple
+from urllib.parse import urlsplit, urlunsplit
 
 from dvc_objects.fs.base import AnyFSPath
 from dvc_objects.fs.path import Path
@@ -8,11 +9,19 @@ class GSPath(Path):
     def split_version(self, path: AnyFSPath) -> Tuple[str, Optional[str]]:
         from gcsfs import GCSFileSystem
 
+        parts = list(urlsplit(path))
+        # NOTE: we use urlsplit/unsplit here to strip scheme before calling
+        # GCSFileSystem._split_path, otherwise it will consider DVC
+        # remote:// protocol to be a bucket named "remote:"
+        scheme = parts[0]
+        parts[0] = ""
+        path = urlunsplit(parts)
         parts = GCSFileSystem._split_path(  # pylint: disable=protected-access
             path, version_aware=True
         )
         bucket, key, generation = parts
-        return f"gs://{bucket}/{key}", generation
+        scheme = f"{scheme}://" if scheme else ""
+        return f"{scheme}{bucket}/{key}", generation
 
     def join_version(self, path: AnyFSPath, version_id: Optional[str]) -> str:
         path, path_version = self.split_version(path)
