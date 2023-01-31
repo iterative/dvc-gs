@@ -12,6 +12,7 @@ from dvc.testing.workspace_tests import (  # noqa, pylint: disable=unused-import
 )
 from dvc.testing.workspace_tests import TestImport as _TestImport
 from dvc.testing.workspace_tests import (  # noqa, pylint: disable=unused-import
+    TestImportURLVersionAware,
     TestLsUrl,
 )
 
