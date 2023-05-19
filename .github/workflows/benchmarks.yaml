@@ -1,0 +1,82 @@
+name: Benchmarks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '5 1 * * *'  # every day at 01:05
+  workflow_dispatch:
+    inputs:
+      dataset:
+        description: "Dataset Size"
+        required: false
+        default: "small"
+        type: choice
+        options:
+          - tiny
+          - small
+          - large
+          - mnist
+
+env:
+  DVC_TEST: "true"
+  FORCE_COLOR: "1"
+  DATASET: ${{ github.event.inputs.dataset || ( github.event_name == 'schedule' && 'mnist' || 'small' ) }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  bench:
+    timeout-minutes: 45
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        pyv: ["3.10"]
+
+    steps:
+    - uses: iterative/setup-cml@v1
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.pyv }}
+        cache: 'pip'
+        cache-dependency-path: setup.cfg
+
+    - name: install
+      run: |
+        pip install --upgrade pip wheel
+        pip install -e ".[tests]"
+        pip install "dvc[testing] @ git+https://github.com/iterative/dvc"
+
+    - name: run benchmarks
+      timeout-minutes: 180
+      run: pytest --dist no --benchmark-save benchmarks-gs --benchmark-group-by func --dvc-revs main,2.45.0,2.41.1,2.40.0,2.39.0,2.18.1,2.11.0 --size ${DATASET} dvc_gs/tests/benchmarks.py --dvc-install-deps gs
+
+    - name: upload raw results
+      uses: actions/upload-artifact@v3
+      with:
+        name: .benchmarks
+        path: .benchmarks
+
+    - name: create md
+      env:
+        REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: ${{ github.event_name == 'pull_request' && ! github.event.pull_request.head.repo.fork }}
+      run: |
+        echo '```' > report.md
+        PY_COLORS=0 py.test-benchmark compare --group-by func --sort name >> report.md
+        echo '```' >> report.md
+        cml comment create report.md
