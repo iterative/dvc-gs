@@ -1,7 +1,8 @@
 import threading
+from typing import Iterator, List, Optional, Union
 
 # pylint:disable=abstract-method
-from dvc_objects.fs.base import ObjectFileSystem
+from dvc_objects.fs.base import AnyFSPath, ObjectFileSystem
 from funcy import cached_property, wrap_prop
 
 from .path import GSPath
@@ -57,3 +58,25 @@ class GSFileSystem(ObjectFileSystem):
         if generation is not None:
             return {"version_aware": True}
         return {}
+
+    def find(
+        self,
+        path: Union[AnyFSPath, List[AnyFSPath]],
+        prefix: bool = False,
+        batch_size: Optional[int] = None,  # pylint: disable=unused-argument
+        **kwargs,
+    ) -> Iterator[str]:
+        def _add_dir_sep(path: str) -> str:
+            # NOTE: gcsfs expects explicit trailing slash for dir find()
+            if self.isdir(path) and not path.endswith(self.path.flavour.sep):
+                return path + self.path.flavour.sep
+            return path
+
+        if not prefix:
+            if isinstance(path, str):
+                path = _add_dir_sep(path)
+            else:
+                path = [_add_dir_sep(p) for p in path]
+        return super().find(
+            path, prefix=prefix, batch_size=batch_size, **kwargs
+        )
