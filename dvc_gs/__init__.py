@@ -2,8 +2,9 @@ import threading
 from typing import Iterator, List, Optional, Union
 
 # pylint:disable=abstract-method
+from dvc.utils.objects import cached_property
 from dvc_objects.fs.base import AnyFSPath, ObjectFileSystem
-from funcy import cached_property, wrap_prop
+from funcy import wrap_prop
 
 from .path import GSPath
 
