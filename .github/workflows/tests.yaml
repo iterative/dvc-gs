@@ -46,6 +46,16 @@ jobs:
       timeout-minutes: 10
       uses: pre-commit/action@v3.0.0
 
+    # https://github.com/abiosoft/colima/issues/468
+    - name: Use colima as default docker host on MacOS
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew install docker
+        colima start
+        ls -la $HOME/.colima/default/docker.sock
+        sudo ln -sf $HOME/.colima/default/docker.sock /var/run/docker.sock
+        ls -la /var/run/docker.sock
+
     - name: run tests
       timeout-minutes: 40
       run: pytest -v -n=auto --cov-report=xml --cov-report=term
