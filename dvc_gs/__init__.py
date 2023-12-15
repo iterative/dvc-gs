@@ -1,12 +1,11 @@
 import threading
-from typing import Iterator, List, Optional, Union
+from typing import Iterator, List, Optional, Tuple, Union
+from urllib.parse import urlsplit, urlunsplit
 
 # pylint:disable=abstract-method
 from dvc.utils.objects import cached_property
 from dvc_objects.fs.base import AnyFSPath, ObjectFileSystem
 from funcy import wrap_prop
-
-from .path import GSPath
 
 
 class GSFileSystem(ObjectFileSystem):
@@ -14,12 +13,50 @@ class GSFileSystem(ObjectFileSystem):
     REQUIRES = {"gcsfs": "gcsfs"}
     PARAM_CHECKSUM = "etag"
 
-    @cached_property
-    def path(self) -> GSPath:
-        def _getcwd():
-            return self.fs.root_marker
+    def getcwd(self):
+        return self.fs.root_marker
 
-        return GSPath(self.sep, getcwd=_getcwd)
+    @classmethod
+    def split_version(cls, path: AnyFSPath) -> Tuple[str, Optional[str]]:
+        from gcsfs import GCSFileSystem
+
+        parts = list(urlsplit(path))
+        # NOTE: we use urlsplit/unsplit here to strip scheme before calling
+        # GCSFileSystem._split_path, otherwise it will consider DVC
+        # remote:// protocol to be a bucket named "remote:"
+        scheme = parts[0]
+        parts[0] = ""
+        path = urlunsplit(parts)
+        parts = GCSFileSystem._split_path(  # pylint: disable=protected-access
+            path, version_aware=True
+        )
+        bucket, key, generation = parts
+        scheme = f"{scheme}://" if scheme else ""
+        return f"{scheme}{bucket}/{key}", generation
+
+    @classmethod
+    def join_version(cls, path: AnyFSPath, version_id: Optional[str]) -> str:
+        path, path_version = cls.split_version(path)
+        if path_version:
+            raise ValueError("path already includes an object generation")
+        return f"{path}#{version_id}" if version_id else path
+
+    @classmethod
+    def version_path(cls, path: AnyFSPath, version_id: Optional[str]) -> str:
+        path, _ = cls.split_version(path)
+        return cls.join_version(path, version_id)
+
+    @classmethod
+    def coalesce_version(
+        cls, path: AnyFSPath, version_id: Optional[str]
+    ) -> Tuple[AnyFSPath, Optional[str]]:
+        path, path_version_id = cls.split_version(path)
+        versions = {ver for ver in (version_id, path_version_id) if ver}
+        if len(versions) > 1:
+            raise ValueError(
+                f"Path version mismatch: '{path}', '{version_id}'"
+            )
+        return path, (versions.pop() if versions else None)
 
     def _prepare_credentials(self, **config):
         login_info = {"consistency": None}
@@ -69,8 +106,8 @@ class GSFileSystem(ObjectFileSystem):
     ) -> Iterator[str]:
         def _add_dir_sep(path: str) -> str:
             # NOTE: gcsfs expects explicit trailing slash for dir find()
-            if self.isdir(path) and not path.endswith(self.path.flavour.sep):
-                return path + self.path.flavour.sep
+            if self.isdir(path) and not path.endswith(self.sep):
+                return path + self.sep
             return path
 
         if not prefix:
