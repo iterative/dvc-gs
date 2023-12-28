@@ -71,6 +71,27 @@ class GCP(Cloud, CloudURLInfo):
         assert isinstance(contents, bytes)
         self._blob.upload_from_string(contents)
 
+    def unlink(self, missing_ok: bool = False) -> None:
+        if not self.exists():
+            if not missing_ok:
+                raise FileNotFoundError(str(self))
+            return
+        self._blob.delete()
+
+    def rmdir(self, recursive: bool = True) -> None:
+        if not self.is_dir():
+            raise NotADirectoryError(str(self))
+
+        blobs = list(self._bucket.list_blobs(prefix=(self / "").path))
+        if not blobs:
+            return
+
+        if not recursive:
+            raise OSError(f"Not recursive and directory not empty: {self}")
+
+        for blob in blobs:
+            blob.delete()
+
     def read_bytes(self):
         return self._blob.download_as_string()
 
