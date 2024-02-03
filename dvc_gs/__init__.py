@@ -1,23 +1,25 @@
 import threading
-from typing import Iterator, List, Optional, Tuple, Union
+from collections.abc import Iterator
+from typing import ClassVar, Optional, Union
 from urllib.parse import urlsplit, urlunsplit
+
+from funcy import wrap_prop
 
 # pylint:disable=abstract-method
 from dvc.utils.objects import cached_property
 from dvc_objects.fs.base import AnyFSPath, ObjectFileSystem
-from funcy import wrap_prop
 
 
 class GSFileSystem(ObjectFileSystem):
     protocol = "gs"
-    REQUIRES = {"gcsfs": "gcsfs"}
+    REQUIRES: ClassVar[dict[str, str]] = {"gcsfs": "gcsfs"}
     PARAM_CHECKSUM = "etag"
 
     def getcwd(self):
         return self.fs.root_marker
 
     @classmethod
-    def split_version(cls, path: AnyFSPath) -> Tuple[str, Optional[str]]:
+    def split_version(cls, path: AnyFSPath) -> tuple[str, Optional[str]]:
         from gcsfs import GCSFileSystem
 
         parts = list(urlsplit(path))
@@ -49,13 +51,11 @@ class GSFileSystem(ObjectFileSystem):
     @classmethod
     def coalesce_version(
         cls, path: AnyFSPath, version_id: Optional[str]
-    ) -> Tuple[AnyFSPath, Optional[str]]:
+    ) -> tuple[AnyFSPath, Optional[str]]:
         path, path_version_id = cls.split_version(path)
         versions = {ver for ver in (version_id, path_version_id) if ver}
         if len(versions) > 1:
-            raise ValueError(
-                f"Path version mismatch: '{path}', '{version_id}'"
-            )
+            raise ValueError(f"Path version mismatch: '{path}', '{version_id}'")
         return path, (versions.pop() if versions else None)
 
     def _prepare_credentials(self, **config):
@@ -99,7 +99,7 @@ class GSFileSystem(ObjectFileSystem):
 
     def find(
         self,
-        path: Union[AnyFSPath, List[AnyFSPath]],
+        path: Union[AnyFSPath, list[AnyFSPath]],
         prefix: bool = False,
         batch_size: Optional[int] = None,  # pylint: disable=unused-argument
         **kwargs,
@@ -115,6 +115,4 @@ class GSFileSystem(ObjectFileSystem):
                 path = _add_dir_sep(path)
             else:
                 path = [_add_dir_sep(p) for p in path]
-        return super().find(
-            path, prefix=prefix, batch_size=batch_size, **kwargs
-        )
+        return super().find(path, prefix=prefix, batch_size=batch_size, **kwargs)
