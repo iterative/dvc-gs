@@ -42,4 +42,4 @@ def gs(make_gs):  # pylint: disable=redefined-outer-name
 
 @pytest.fixture
 def real_gs():
-    yield GCP(GCP.get_url(), "")
+    return GCP(GCP.get_url(), "")

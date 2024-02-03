@@ -6,7 +6,6 @@ from dvc.testing.path_info import CloudURLInfo
 
 
 class GCP(Cloud, CloudURLInfo):
-
     IS_OBJECT_STORAGE = True
 
     def __init__(self, url, credentialpath):
@@ -101,7 +100,8 @@ class FakeGCP(GCP):
 
     def __init__(self, url, endpoint_url: str):
         super().__init__(
-            url, ""  # no need to provide credentials for a mock server
+            url,
+            "",  # no need to provide credentials for a mock server
         )
         self.endpoint_url = endpoint_url
 
