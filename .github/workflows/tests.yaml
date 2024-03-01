@@ -23,9 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04, windows-latest, macos-latest]
-        # NOTE: 3.12 is temporarily disabled waiting for
-        # https://github.com/fsspec/universal_pathlib/pull/152
-        pyv: ["3.9", "3.10", "3.11"]
+        pyv: ["3.9", "3.10", "3.11", "3.12"]
     steps:
     - uses: actions/checkout@v3
       with:
@@ -41,7 +39,7 @@ jobs:
     - name: install
       run: |
         pip install --upgrade pip wheel
-        pip install -e ".[tests]"
+        pip install -e ".[dev]"
         pip install "dvc[testing] @ git+https://github.com/iterative/dvc"
 
     - name: lint
