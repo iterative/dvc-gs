@@ -35,11 +35,3 @@ repos:
       files: ^dvc_gs/
       language: system
       types: [python]
-  - hooks:
-      - args:
-          - -i
-          - "2"
-        id: beautysh
-        language_version: python3
-    repo: https://github.com/lovesegfault/beautysh
-    rev: v6.2.1
