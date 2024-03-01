@@ -25,16 +25,16 @@ jobs:
         os: [ubuntu-20.04, windows-latest, macos-latest]
         pyv: ["3.9", "3.10", "3.11", "3.12"]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.pyv }}
         cache: 'pip'
-        cache-dependency-path: setup.cfg
+        cache-dependency-path: pyproject.toml
 
     - name: install
       run: |
@@ -44,7 +44,7 @@ jobs:
 
     - name: lint
       timeout-minutes: 10
-      uses: pre-commit/action@v3.0.0
+      uses: pre-commit/action@v3.0.1
 
     # https://github.com/abiosoft/colima/issues/468
     - name: Use colima as default docker host on MacOS
