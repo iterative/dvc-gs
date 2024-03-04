@@ -61,7 +61,7 @@ jobs:
 
     - name: run benchmarks
       timeout-minutes: 180
-      run: pytest --dist no --benchmark-save benchmarks-gs --benchmark-group-by func --dvc-revs main,3.10.0,2.58.2--dataset ${DATASET} dvc_gs/tests/benchmarks.py --dvc-install-deps gs
+      run: pytest --dist no --benchmark-save benchmarks-gs --benchmark-group-by func --dvc-revs main,3.10.0,2.58.2 --dataset ${DATASET} dvc_gs/tests/benchmarks.py --dvc-install-deps gs
 
     - name: upload raw results
       uses: actions/upload-artifact@v4
