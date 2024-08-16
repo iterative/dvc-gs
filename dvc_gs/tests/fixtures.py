@@ -6,12 +6,14 @@ from .cloud import GCP, FakeGCP
 
 
 @pytest.fixture
-# def make_gs(tmp_gcs_path, fake_gcs_server):
 def make_gs(request):
     def _make_gs():
         bucket = os.environ.get("DVC_TEST_GS_BUCKET")
         if bucket and os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
+            raise RuntimeError()
             return GCP(GCP.get_url(), "")
+
+        raise RuntimeError()
         tmp_gcs_path = request.getfixturevalue("tmp_gcs_path")
         fake_gcs_server = request.getfixturevalue("fake_gcs_server")
         return FakeGCP(
