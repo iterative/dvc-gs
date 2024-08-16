@@ -41,5 +41,10 @@ def gs(make_gs):  # pylint: disable=redefined-outer-name
 
 
 @pytest.fixture
+def remote(make_remote):
+    return make_remote(name="upstream", typ="gs")
+
+
+@pytest.fixture
 def real_gs():
     return GCP(GCP.get_url(), "")
