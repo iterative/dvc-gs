@@ -34,7 +34,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "dvc-gs[tests]",
-    "mypy==1.11.1",
+    "mypy==1.11.2",
 ]
 tests = [
     "dvc[testing]",
