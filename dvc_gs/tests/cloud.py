@@ -18,6 +18,10 @@ class GCP(Cloud, CloudURLInfo):
         return ret
 
     @property
+    def fs_path(self):
+        return self.bucket + "/" + self.path.lstrip("/")
+
+    @property
     def config(self):
         config = {"url": self.url}
         if not os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
