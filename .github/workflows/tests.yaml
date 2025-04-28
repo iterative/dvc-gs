@@ -46,24 +46,14 @@ jobs:
       timeout-minutes: 10
       uses: pre-commit/action@v3.0.1
 
-    # https://github.com/iterative/pytest-servers/pull/122
-    # https://github.com/abiosoft/colima/issues/468
-    # https://github.com/abiosoft/colima/blob/main/docs/FAQ.md#cannot-connect-to-the-docker-daemon-at-unixvarrundockersock-is-the-docker-daemon-running
-    # colima v0.5.6 seems to run more stable than the latest - that has occasional network failures (ports are not open)
-    # see: https://github.com/abiosoft/colima/issues/962
     - name: Use colima as default docker host on MacOS
       if: runner.os == 'macOS'
       run: |
-        brew install docker lima || true # avoid non-zero exit code if brew link fails
-        sudo curl -L -o /usr/local/bin/colima https://github.com/abiosoft/colima/releases/download/v0.5.6/colima-Darwin-x86_64
-        sudo chmod +x /usr/local/bin/colima
+        brew install colima docker qemu
         colima start
-        sudo ln -vsf "${HOME}"/.colima/default/docker.sock /var/run/docker.sock
+        echo DOCKER_HOST="unix://${HOME}/.colima/default/docker.sock" >> $GITHUB_ENV
       env:
         HOMEBREW_NO_AUTO_UPDATE: true
-        HOMEBREW_NO_INSTALL_CLEANUP: true
-        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: true
-        HOMEBREW_NO_INSTALL_UPGRADE: true
 
     - name: run tests
       timeout-minutes: 40
