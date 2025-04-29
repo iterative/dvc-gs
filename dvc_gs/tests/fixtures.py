@@ -1,4 +1,5 @@
 import os
+import sys
 
 import pytest
 
@@ -6,12 +7,15 @@ from .cloud import GCP, FakeGCP
 
 
 @pytest.fixture
-# def make_gs(tmp_gcs_path, fake_gcs_server):
 def make_gs(request):
     def _make_gs():
         bucket = os.environ.get("DVC_TEST_GS_BUCKET")
         if bucket and os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
             return GCP(GCP.get_url(), "")
+
+        if os.environ.get("CI") and sys.platform == "darwin":
+            pytest.skip("disabled for macOS on GitHub Actions")
+
         tmp_gcs_path = request.getfixturevalue("tmp_gcs_path")
         fake_gcs_server = request.getfixturevalue("fake_gcs_server")
         return FakeGCP(
@@ -24,8 +28,14 @@ def make_gs(request):
 
 @pytest.fixture
 def make_gs_version_aware(  # pylint: disable=unused-argument
-    versioning, tmp_gcs_path, fake_gcs_server
+    request, versioning
 ):
+    if os.environ.get("CI") and sys.platform == "darwin":
+        pytest.skip("disabled for macOS on GitHub Actions")
+
+    tmp_gcs_path = request.getfixturevalue("tmp_gcs_path")
+    fake_gcs_server = request.getfixturevalue("fake_gcs_server")
+
     def _make_gs():
         return FakeGCP(
             str(tmp_gcs_path).replace("gcs://", "gs://"),
