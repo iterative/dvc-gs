@@ -15,9 +15,6 @@ class GSFileSystem(ObjectFileSystem):
     REQUIRES: ClassVar[dict[str, str]] = {"gcsfs": "gcsfs"}
     PARAM_CHECKSUM = "etag"
 
-    def getcwd(self):
-        return self.fs.root_marker
-
     @classmethod
     def split_version(cls, path: AnyFSPath) -> tuple[str, Optional[str]]:
         from gcsfs import GCSFileSystem
