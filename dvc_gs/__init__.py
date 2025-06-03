@@ -61,7 +61,12 @@ class GSFileSystem(ObjectFileSystem):
         project = config.get("projectname")
         if project is not None:
             login_info["project"] = project
-        login_info["token"] = config.get("credentialpath")
+
+        if config.get("allow_anonymous_login"):
+            login_info["token"] = "anon"  # noqa: S105
+        else:
+            login_info["token"] = config.get("credentialpath")
+
         login_info["endpoint_url"] = config.get("endpointurl")
         login_info["session_kwargs"] = {"trust_env": True}
         return login_info
