@@ -56,13 +56,3 @@ class TestImport(_TestImport):
         # we temporarily set it to None until the test is revisited
         # https://github.com/iterative/dvc-gs/issues/7#issuecomment-1218497067
         return None
-
-    @pytest.mark.xfail(reason="https://github.com/iterative/dvc-gs/issues/46")
-    def test_import_empty_dir(
-        self,
-        tmp_dir,
-        dvc,
-        workspace,  # pylint: disable=redefined-outer-name
-        is_object_storage,
-    ):
-        return super().test_import_empty_dir(tmp_dir, dvc, workspace, is_object_storage)
