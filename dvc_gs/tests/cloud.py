@@ -116,7 +116,11 @@ class FakeGCP(GCP):
 
     @property
     def config(self):
-        return {"url": self.url, "endpointurl": self.endpoint_url}
+        return {
+            "url": self.url,
+            "endpointurl": self.endpoint_url,
+            "allow_anonymous_login": True,
+        }
 
     def get_url(self):  # pylint: disable=arguments-differ
         return self.url
