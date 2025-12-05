@@ -9,10 +9,7 @@ write_to = "dvc_gs/_dvc_gs_version.py"
 name = "dvc-gs"
 description = "gs plugin for dvc"
 readme = "README.rst"
-keywords = [
-    "dvc",
-    "gs",
-]
+keywords = ["dvc", "gs"]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 maintainers = [{ name = "Iterative", email = "support@dvc.org" }]
@@ -29,22 +26,15 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
 ]
 dynamic = ["version"]
-dependencies = [
-    "dvc",
-    "gcsfs>=2022.11.0",
-]
+dependencies = ["dvc", "gcsfs>=2022.11.0"]
 
 [project.optional-dependencies]
-dev = [
-    "dvc-gs[tests]",
-    "mypy==1.18.2",
-]
+dev = ["dvc-gs[tests]", "mypy==1.18.2"]
 tests = [
     "dvc[testing]",
     "pytest>=7,<9",
     "pytest-cov>=4.1.0",
     "pytest-xdist>=3.2",
-    "pytest-servers[gcs]>=0.4.0",
     "google-cloud-storage>=2.7.0",
 ]
 
