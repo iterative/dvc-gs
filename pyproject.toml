@@ -29,7 +29,7 @@ dynamic = ["version"]
 dependencies = ["dvc", "gcsfs>=2022.11.0"]
 
 [project.optional-dependencies]
-dev = ["dvc-gs[tests]", "mypy==1.18.2"]
+dev = ["dvc-gs[tests]", "mypy==1.19.0"]
 tests = [
     "dvc[testing]",
     "pytest>=7,<9",
