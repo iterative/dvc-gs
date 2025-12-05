@@ -49,7 +49,7 @@ jobs:
 
     - name: run tests
       timeout-minutes: 40
-      run: pytest -v -n=auto --cov-report=xml --cov-report=term
+      run: pytest -v --cov-report=xml --cov-report=term
 
     - name: upload coverage report
       uses: codecov/codecov-action@v5
